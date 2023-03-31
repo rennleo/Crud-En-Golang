@@ -5,20 +5,37 @@
         Empleados
     </div>
     <div class="card-body">
-        <form action="/insertar" method="post">
+        <form action="/actualizar" method="post">
+          <div class="form-group">
+            <label class="sr-only" for="inputName">Id</label>
+            <input type="hidden" value="{{.Id}}" class="form-control" name="id" id="id" placeholder="">
+          </div>
             <div class="form-group">
               <label for="">Nombre:</label>
               <input type="text"
-                class="form-control" name="nombre" id="nombre" aria-describedby="helpId" placeholder="">
+                class="form-control" value="{{.Nombre}}" name="nombre" id="nombre" aria-describedby="helpId" placeholder="">
               <small id="helpId" class="form-text text-muted">Escribe Tu Nombre</small>
             </div>
             <div class="form-group">
               <label for="">Correo:</label>
-              <input type="email" class="form-control" name="email" id="email" aria-describedby="emailHelpId" placeholder="">
+              <input type="email" class="form-control" name="email" value="{{.Email}}" id="email" aria-describedby="emailHelpId" placeholder="">
               <small id="emailHelpId" class="form-text text-muted">Escribe Tu Email</small>
             </div>
-            <button type="submit" class="btn btn-primary">Agregar Empleado</button>
-          
+            <div class="form-group">
+              <label for="">Documento:</label>
+              <input type="number" class="form-control" name="documento" value="{{.Documento}}" id="documento" aria-describedby="emailHelpId" placeholder="">
+              <small id="emailHelpId" class="form-text text-muted">Escribe Tu Documento</small>
+            </div>
+            <div class="form-group">
+              <label for="">Telefono:</label>
+              <input type="number" class="form-control" name="telefono" value="{{.Telefono}}" id="documento" aria-describedby="emailHelpId" placeholder="">
+              <small id="emailHelpId" class="form-text text-muted">Escribe Tu Telefono</small>
+            </div>
+
+            <button type="submit" class="btn btn-success">Actualizar Informacion</button>
+            <a name="" id="" class="btn btn-primary" href="/" role="button">Cancelar</a>
+            
+
         </form>
   
     </div>

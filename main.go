@@ -28,9 +28,11 @@ func conexionDB() (conexion *sql.DB) {
 }
 
 type Empleado struct {
-	Id     int
-	Nombre string
-	Email  string
+	Id        int
+	Nombre    string
+	Email     string
+	Documento int
+	Telefono  int
 }
 
 func main() {
@@ -39,6 +41,7 @@ func main() {
 	http.HandleFunc("/insertar", Insertar)
 	http.HandleFunc("/borrar", Borrar)
 	http.HandleFunc("/editar", Editar)
+	http.HandleFunc("/actualizar", Actualizar)
 
 	log.Println("Servidor corrriendo")
 	http.ListenAndServe(":8080", nil)
@@ -69,15 +72,17 @@ func Inicio(w http.ResponseWriter, r *http.Request) {
 	arrayEmpleado := []Empleado{}
 
 	for registros.Next() {
-		var id int
+		var id, documento, telefono int
 		var nombre, email string
-		err = registros.Scan(&id, &nombre, &email)
+		err = registros.Scan(&id, &nombre, &email, &documento, &telefono)
 		if err != nil {
 			panic(err.Error())
 		}
 		empleado.Id = id
 		empleado.Nombre = nombre
 		empleado.Email = email
+		empleado.Documento = documento
+		empleado.Telefono = telefono
 
 		arrayEmpleado = append(arrayEmpleado, empleado)
 
@@ -94,18 +99,21 @@ func Editar(w http.ResponseWriter, r *http.Request) {
 	empleado := Empleado{}
 
 	for registro.Next() {
-		var id int
+		var id,documento,telefono int
 		var nombre, email string
-		err = registro.Scan(&id, &nombre, &email)
+		err = registro.Scan(&id, &nombre, &email,&documento,&telefono)
 		if err != nil {
 			panic(err.Error())
 		}
 		empleado.Id = id
 		empleado.Nombre = nombre
 		empleado.Email = email
+		empleado.Documento = documento
+		empleado.Telefono = telefono
 
 	}
 	fmt.Println(empleado)
+	plantillas.ExecuteTemplate(w, "editar", empleado)
 
 }
 
@@ -118,14 +126,35 @@ func Insertar(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		nombre := r.FormValue("nombre")
 		email := r.FormValue("email")
+		documento := r.FormValue("documento")
+		telefono := r.FormValue("telefono")
 
 		//conexion a base de datos
 		conexionEstablecida := conexionDB()
-		insertarRegistros, err := conexionEstablecida.Prepare("INSERT INTO empleados(nombre,email) VALUES(?,?)")
+		insertarRegistros, err := conexionEstablecida.Prepare("INSERT INTO empleados(nombre,email,documento,telefono) VALUES(?,?,?,?)")
 		if err != nil {
 			panic(err.Error())
 		}
-		insertarRegistros.Exec(nombre, email)
+		insertarRegistros.Exec(nombre, email, documento, telefono)
+		http.Redirect(w, r, "/", 301)
+
+	}
+}
+func Actualizar(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		id := r.FormValue("id")
+		nombre := r.FormValue("nombre")
+		email := r.FormValue("email")
+		documento := r.FormValue("documento")
+		telefono := r.FormValue("telefono")
+
+		//conexion a base de datos
+		conexionEstablecida := conexionDB()
+		actualizarRegistros, err := conexionEstablecida.Prepare("UPDATE empleados SET nombre=?,email=?,documento=?,telefono=? WHERE id =?")
+		if err != nil {
+			panic(err.Error())
+		}
+		actualizarRegistros.Exec(nombre, email, documento, telefono, id)
 		http.Redirect(w, r, "/", 301)
 
 	}
